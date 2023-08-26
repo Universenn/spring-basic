@@ -1,17 +1,15 @@
-package com.example.springbasic;
+package com.example.springbasic.member;
 
-import com.example.springbasic.member.Grade;
-import com.example.springbasic.member.Member;
-import com.example.springbasic.member.MemberService;
-import com.example.springbasic.member.MemberServiceImpl;
+import com.example.springbasic.AppConfig;
 
 public class MemberApp {
     public static void main(String[] args) {
+        AppConfig appConfig = new AppConfig();
+        MemberService memberService = appConfig.memberService();
+
         Member member1 = new Member(1L, "juwan", Grade.BASIC);
         Member member2 = new Member(2L, "yeezi", Grade.VIP);
 
-        MemberService memberService = new MemberServiceImpl();
-//        Member before = memberService.findMember(2L);
         memberService.join(member1);
         memberService.join(member2);
         Member after = memberService.findMember(2L);
