@@ -19,7 +19,7 @@ public class OrderServiceTest {
         memberService.join(member1);
         memberService.join(member2);
 
-        Order order1 = orderService.creatOrder(member1.getId(), "itemA", 10000);
+        Order order1 = orderService.creatOrder(member1.getId(), "itemA", 20000);
         Order order2 = orderService.creatOrder(member2.getId(), "itemB", 10000);
         Assertions.assertThat(order1.getDiscountPrice()).isEqualTo((int) (order1.getItemPrice()*0.1));
         Assertions.assertThat(order1.getItemName()).isEqualTo("itemA");
