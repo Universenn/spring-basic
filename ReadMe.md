@@ -1,6 +1,7 @@
 ## 스프링
 
 ### 무언가를 의존한다. 알고 있다는 뜻
+### 단위 테스트가 중요하다 순수한 자바로 테스트하는 것이 중요하다.!!
 
 <details>
 <summary>다형성</summary>
@@ -67,3 +68,38 @@
 </div>
 </details>
 
+<details>
+<summary> IoC란</summary>
+<div markdown="1">
+
+### 제어의 역전 IoC(Inversion of Control)
+- 기존 프로그램은 구현 객체가 스스로 생성하고, 연결하고, 실행 했다면 AppConfig 가 등장한 이후 구현 객체는 자신의 로직을 실행하는 것만 담당한다. 
+- 이렇듯 프로그램의 제어 흐름을 직접 제어하는 것이 아니라 외부에서 관리하는 것을 제어의 역전(IoC)이라 한다. 
+
+</div>
+</details>
+
+<details>
+<summary> DI란</summary>
+<div markdown="1">
+
+### 의존관계 주입 DI(Dependency Injection)
+
+- 우선 정적인 클래스 의존 관계와, 실행 시점에 결정되는 동적인 의존 관계가 있다.
+- 예제에서 import 만 보고 OrderServiceImpl 은 MemberRepository 와 DiscountPolicy 에 의존한다는 것을 알 수 있지만 실제 실행 시점에서 어떤 객체가 실행되는 지는 알 수 없다.
+- 실행 시점에 외부에서 실제 구현 객체를 생성하고 클라이언트에 전달해서 클라이언트와 서버의 실제 의존관계가 연결 되는 것을 의존관계 주입 이라고 한다.
+- 의존관계 주입을 사용하면 정적인 클래스 의존관계를 변경하지 않고, 동적인 객체 인스턴스 의존관계를
+  쉽게 변경할 수 있다.
+</div>
+</details>
+
+
+<details>
+<summary> 프레임워크 vs 라이브러리</summary>
+<div markdown="1">
+
+- JUnit 처럼 내가 작성한 코드를 제어하고, 대신 실행하는 것을 프레임워크라 한다.
+- 내가 직접 제어의 흐름을 담당한다면 그것은 프레임워크가 아니라 라이브러리다
+
+</div>
+</details>
