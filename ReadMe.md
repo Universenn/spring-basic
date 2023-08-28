@@ -103,3 +103,194 @@
 
 </div>
 </details>
+
+
+<details>
+<summary> 싱글톤</summary>
+<div markdown="1">
+
+## 웹 애플리케이션과 싱글톤
+- 주로 웹 애플리케이션은 동시에 고객들이 요청을 한다.
+```java
+    @Test
+    @DisplayName("스프링 없는 순수한 DI 컨테이너")
+    void pureContainer() {
+        AppConfig appConfig = new AppConfig();
+
+        // 1. 조회: 호출할 때 마다 객체를 생성 하는지?
+        MemberService memberService1 = appConfig.memberService();
+
+        // 2. 조회: 호출할 때 마다 객체를 생성 하는지?
+        MemberService memberService2 = appConfig.memberService();
+
+        // 참조값이 다른 것을 확인
+        System.out.println("memberService1 = " + memberService1);
+        System.out.println("memberService2 = " + memberService2);
+    }
+```
+위 와 같은 코드로 호출을 할때 결과값으로
+```java
+memberService1 = member.MemberServiceImpl@4988d8b8
+memberService2 = member.MemberServiceImpl@c0c2f8d
+```
+서로 다른 객체가 출력 되는것을 볼 수 있다.
+
+그럼 그 호출이 어마어마 할탠데 나중에는 그 트래픽들을 어떻게 감당 할 것인가? 계속해서 객체를 만들어 낼 것인가? 메모리 낭비가 심해서 안된다.
+
+해결방안은 해당 객체가 딱 1개만 생성되고, 공유하도록 설계하면 된다. - 싱글톤 패턴
+
+### 싱글톤 패턴
+- 클래스의 인스턴스가 딱 1개만 생성되는 것을 보장하는 디자인 패턴이다.
+- 그래서 객체 인스턴스를 2개 이상 생성하지 못하도록 막아야 한다.
+  - private 생성자를 사용해서 외부에서 임이로 new 키워드를 사용하지 못하도록 막아야 한다.
+
+```java
+public class SingleTonService {
+
+    // 1. static 영역에 객체를 딱 1개만 생성해둔다.
+    private static final SingleTonService instance = new SingleTonService();
+
+    // 2. public 으로 열어서 객체 인스턴스가 필요하면 이  static 메서들르 통해서만 조회하도록 허용한다.
+    public static SingleTonService getInstance() {
+        return instance;
+    }
+
+    // 3. 생성자를 private 으로 선언해서 외부에서 new 키워드를 사용한 객체 생성을 못하게 막는다.
+    private SingleTonService() {
+    }
+}
+
+```
+1. static 영역에 객체 instance를 미리 하나 생성해서 올려둔다.
+2. 이 객체 인스턴스가 필요하면 오직 getInstance() 메서드를 통해서만 조회할 수 있다. 이 메서드를
+   호출하면 항상 같은 인스턴스를 반환한다.
+3. 딱 1개의 객체 인스턴스만 존재해야 하므로, 생성자를 private으로 막아서 혹시라도 외부에서 new
+   키워드로 객체 인스턴스가 생성되는 것을 막는다.
+
+```java
+// Test
+    @Test
+    @DisplayName("싱글톤 패턴을 적용한 객체 사용")
+    void singletonServiceTest() {
+//        SingleTonService singleTonService = new SingleTonService();
+        // 1. 조회: 호출할 때 마다 객체를 생성 하는지?
+        SingleTonService instance1 = SingleTonService.getInstance();
+
+        // 2. 조회: 호출할 때 마다 객체를 생성 하는지?
+        SingleTonService instance2 = SingleTonService.getInstance();
+
+        // 참조값이 다른 것을 확인
+        System.out.println("instance1 = " + instance1);
+        System.out.println("instance2 = " + instance2);
+
+        // memberService1 != memberService1
+        Assertions.assertThat(instance1).isEqualTo(instance2);
+
+    
+//instance1 = singleton.SingleTonService@22fcf7ab
+//instance2 = singleton.SingleTonService@22fcf7ab
+
+```
+### 싱글톤 패턴 문제점
+- 싱글톤 패턴을 구현하는 코드 자체가 많이 들어간다.
+- 의존관계상 클라이언트가 구체 클래스에 의존한다 - DIP를 위반한다.
+- 클라이언트가 구체 클래스에 의존해서 OCP 원칙을 위반할 가능성이 높다.
+- 테스트하기 어렵다.
+- 내부 속성을 변경하거나 초기화 하기 어렵다.
+- private 생성자로 자식 클래스를 만들기 어렵다.
+- 결론적으로 유연성이 떨어진다.
+- 안티패턴으로 불리기도 한다.
+
+### 스프링을 사용하면 싱글톤 컨테이너를 사용하면서 다양한 문제점을 해결할 수 있다.  
+
+### 싱글톤 컨테이너
+```java
+    @Test
+    @DisplayName("스프링 컨테이너와 싱글톤")
+    void springContainer() {
+
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+        // 1. 조회: 호출할 때 마다 객체를 생성 하는지?
+        MemberService memberService1 = ac.getBean("memberService", MemberService.class);
+
+        // 2. 조회: 호출할 때 마다 객체를 생성 하는지?
+        MemberService memberService2 = ac.getBean("memberService", MemberService.class);
+
+        // 참조값이 다른 것을 확인
+        System.out.println("memberService1 = " + memberService1);
+        System.out.println("memberService2 = " + memberService2);
+
+        // memberService1 != memberService1 
+        Assertions.assertThat(memberService1).isSameAs(memberService2);
+
+    }
+
+//memberService1 = member.MemberServiceImpl@4218500f
+//memberService2 = member.MemberServiceImpl@4218500f
+```
+위 코드와 같이 스프링 컨테이너 (싱글톤 컨테이너) 를 사용하면 고객의 요청이 올 때 마다 생성하는 것이 아니라, 이미 만들어진 객체를 공유해서 효율적으로 재사용 할 수 있다.
+
+### 싱글톤 주의점
+
+- 싱글톤 패턴이든, 스프링 같은 싱글톤 컨테이너를 사용하든, 객체 인스턴스를 하나만 생성해서 공유하는
+싱글톤 방식은 여러 클라이언트가 하나의 같은 객체 인스턴스를 공유하기 때문에 싱글톤 객체는 상태를
+유지(stateful)하게 설계하면 안된다.
+- 진짜 공유필드는 조심해야 한다! 스프링 빈은 항상 무상태(stateless)로 설계하자.!!!
+
+### @Configuration
+
+```
+@Configuration
+public class AppConfig {
+
+    // memberService 주입
+    @Bean
+    public MemberService memberService(){
+        System.out.println("call - AppConfig.memberService");
+        return new MemberServiceImpl(memberRepository());
+    }
+
+    @Bean
+    public OrderService orderService() {
+        System.out.println("call - AppConfig.orderService");
+        return new OrderServiceImpl(memberRepository(), getDiscountPolicy());
+    }
+
+    @Bean
+    public MemberRepository memberRepository() {
+        System.out.println("call - AppConfig.memberRepository");
+        return new MemoryMemberRepository();
+    }
+}
+
+```
+```java
+        MemberServiceImpl memberService1 = ac.getBean("memberService", MemberServiceImpl.class);
+        OrderServiceImpl orderService1 = ac.getBean("orderService", OrderServiceImpl.class);
+        MemberRepository memberRepository = ac.getBean("memberRepository", MemberRepository.class);
+```
+
+
+- 어찌 됐든 위 코드와 같이 출력을 하면 memberRepository 는 총 3번 이 출력 되어야 한다.
+```java
+  "call - AppConfig.memberService"
+  "call - AppConfig.memberRepository"
+  "call - AppConfig.orderService"
+  "call - AppConfig.memberRepository"
+  "call - AppConfig.memberRepository"
+```
+
+- 하지만 memberRepository 는 하나만 출력 되는것을 볼 수 있다.
+```java
+  "call - AppConfig.memberService"
+  "call - AppConfig.memberRepository"
+  "call - AppConfig.orderService"
+```
+
+- 그 이유는 빈으로 등록 할때 임의의 클래스를 만들고 상속받아 그 임의의 클래스를 스프링 빈으로 등록한 것이다.
+- 그리고 그 빈이 등록이 되어 있으면 빈을 반환하고 스프링 빈이 없으면 생성해서 스프링 빈으로 등록하고 반환하는 코드가 동적으로 만들어 진다.
+
+
+
+</div>
+</details>
