@@ -10,7 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderServiceImpl implements OrderService {
 
+
+    // 필드 객체 는 불변하여 잘 사용하지 않는다
+    // 스프링이 없는 자바로 단위테스트를 진행 할 수 없다.
+//    @Autowired
     private final MemberRepository memberRepository;
+//    @Autowired
     private final DiscountPolicy discountPolicy;
 
     @Autowired
