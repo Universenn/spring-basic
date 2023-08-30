@@ -34,7 +34,7 @@ public class AppConfig {
         return new MemoryMemberRepository();
     }
 
-//    @Bean
+    @Bean
     public DiscountPolicy getDiscountPolicy() {
         System.out.println("AppConfig.getDiscountPolicy");
         return new RateDiscountPolicy();
