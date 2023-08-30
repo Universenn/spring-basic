@@ -2,11 +2,11 @@ package com.example.springbasic.discount;
 
 import com.example.springbasic.member.Grade;
 import com.example.springbasic.member.Member;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Component
-@Qualifier("fixDiscountPolicy")
+@Primary
 public class RateDiscountPolicy implements DiscountPolicy{
 
     private final int discountPercent = 10;
