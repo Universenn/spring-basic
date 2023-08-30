@@ -1,9 +1,19 @@
 package com.example.springbasic.lifecycle;
 
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-
-public class NetworkClient implements InitializingBean, DisposableBean {
+/**
+ *  implements InitializingBean, DisposableBean 단점
+ *
+ *  스프링의 너무 의존적이다.
+ *  오래전 방법이고 지금은 더 나은 방법이 있어서 거의 사용하지 않는다
+ *
+ * @Bean(initMethod = "init", destroyMethod = "close")
+ *
+ * 스프링의 의존적이지 않다
+ * 코드가 아니라 설정정보를 사용하기 때문에 고칠 수 없는 외부라이브러리에도 초기화 정보, 종료 메서드를 적용할 수 있다.
+ * destroyMethod = "" 공란으로 두면 close와 shutdown 이라는 값을 가진 메서드를 찾아 자동으로 호출 해준다.
+ *
+ */
+public class NetworkClient {
 
     private String url;
 
@@ -29,25 +39,16 @@ public class NetworkClient implements InitializingBean, DisposableBean {
         System.out.println("close : " + url);
     }
 
-    /**
-     *  implements InitializingBean, DisposableBean 단점
-     *
-     *  스프링의 너무 의존적이다.
-     *  오래전 방법이고 지금은 더 나은 방법이 있어서 거의 사용하지 않는다
-     *
-     */
 
 
     // 빈생성 -> 의존관계 주입 -> afterPropertiesSet() 호출
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    public void init()  {
         connect();
         call("초기화 연결 메시지");
     }
 
     // 빈이 종료 되기 직전 destroy() 호출
-    @Override
-    public void destroy() throws Exception {
+    public void close() {
         disconnect();
     }
 }
