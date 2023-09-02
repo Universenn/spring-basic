@@ -15,7 +15,9 @@ public class SingletonTest {
 
         AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SingletonBean.class);
 
+        System.out.println("SingletonTest.singletonBeanTest1");
         SingletonBean singletonBean1 = ac.getBean(SingletonBean.class);
+        System.out.println("SingletonTest.singletonBeanTest2");
         SingletonBean singletonBean2 = ac.getBean(SingletonBean.class);
 
         System.out.println("singletonBean1 = " + singletonBean1);
