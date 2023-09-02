@@ -2,8 +2,9 @@ package com.example.springbasic.scope;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
@@ -41,22 +42,17 @@ public class SingletonWithPrototypeTest {
     @Scope("singleton")
     static class ClientBean {
 
-        private final ApplicationContext applicationContext;
-//        private final PrototypeBean prototypeBean;
-
-//        @Autowired
-//        ClientBean(PrototypeBean prototypeBean) {
-//            this.prototypeBean = prototypeBean;
-//        }
-
+//        private final ObjectProvider<PrototypeBean> prototypeBeanProvider;
+        private final ObjectFactory<PrototypeBean> prototypeBeanProvider;
 
         @Autowired
-        public ClientBean(ApplicationContext applicationContext) {
-            this.applicationContext = applicationContext;
+        ClientBean(ObjectProvider<PrototypeBean> prototypeBeanProvider) {
+            this.prototypeBeanProvider = prototypeBeanProvider;
         }
 
+
         public int logic() {
-            PrototypeBean prototypeBean = applicationContext.getBean(PrototypeBean.class);
+            PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
             prototypeBean.addCount();
             int count = prototypeBean.getCount();
             return count;
