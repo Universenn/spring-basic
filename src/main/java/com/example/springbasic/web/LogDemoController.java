@@ -2,7 +2,6 @@ package com.example.springbasic.web;
 
 import com.example.springbasic.common.MyLogger;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -13,17 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class LogDemoController {
     private final LogService logService;
-    private final ObjectProvider<MyLogger> myLoggerProvider;
+    private final MyLogger myLogger;
 
 
     @RequestMapping("log-demo")
     @ResponseBody
-    public String logDemo(HttpServletRequest request) {
+    public String logDemo(HttpServletRequest request) throws InterruptedException {
         String requestURI = request.getRequestURL().toString();
-        MyLogger myLogger = myLoggerProvider.getObject();
+        System.out.println("myLogger = " + myLogger.getClass());
         myLogger.setRequestURL(requestURI);
 
         myLogger.log("controller test");
+        Thread.sleep(1000);
         logService.logic("testId");
         return "OK";
     }
